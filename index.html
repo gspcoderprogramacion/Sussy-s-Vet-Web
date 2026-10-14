@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sussy's Vet | Cuidado Veterinario</title>
+    
+    <!-- Aquí agregamos el logo como Favicon (Pestaña del navegador) -->
+    <link rel="icon" type="image/png" href="logo_sussys.png">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Decoraciones de fondo (Huellitas animadas) -->
+    <div class="bg-decorations">
+        <span class="paw" style="top: 10%; left: 5%; animation-delay: 0s;">🐾</span>
+        <span class="paw" style="top: 80%; left: 15%; animation-delay: 2s; transform: rotate(45deg);">🐾</span>
+        <span class="paw" style="top: 20%; right: 10%; animation-delay: 4s; transform: rotate(-30deg);">🐾</span>
+        <span class="paw" style="top: 70%; right: 5%; animation-delay: 1s; transform: rotate(15deg);">🐾</span>
+    </div>
+
+    <!-- Navegación con el Logo integrado -->
+    <header>
+        <div class="logo">
+            <!-- Etiqueta de imagen para tu logo -->
+            <img src="logo_sussys.png" alt="Sussy's Vet Logo">
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#" class="btn-home">Inicio (Cerrar Paneles)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenedor de los 3 Paneles (Acordeón Fijo) -->
+    <div class="panels-container" id="panels-container">
+        
+        <!-- PANEL 1: IZQUIERDA (REGISTRO) -->
+        <div class="panel" id="panel-register">
+            <div class="cover cover-left">
+                <h2>Crear Cuenta 📝</h2>
+                <p>Únete a nuestra manada</p>
+                <span class="click-hint">Clic para abrir ⬆️</span>
+            </div>
+            <div class="content">
+                <button class="btn-close">❌</button>
+                <div class="content-inner">
+                    <h2 style="color: var(--primary); margin-bottom: 20px;">Registro Nuevo</h2>
+                    <form class="contact-form" id="register-form">
+                        <input type="text" name="Nombre" placeholder="Tu Nombre" required>
+                        <input type="email" name="Email" placeholder="Tu Correo" required>
+                        <input type="password" name="Password" placeholder="Crea una Contraseña" required>
+                        <button type="submit" class="btn btn-solid">Registrarme 🐾</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 2: MEDIO (INICIAR SESIÓN) -->
+        <div class="panel" id="panel-login">
+            <div class="cover cover-mid">
+                <h2>Iniciar Sesión 👤</h2>
+                <p>Bienvenido de vuelta</p>
+                <span class="click-hint">Clic para abrir ⬆️</span>
+            </div>
+            <div class="content">
+                <button class="btn-close">❌</button>
+                <div class="content-inner">
+                    <h2 style="color: var(--secondary); margin-bottom: 20px;">Acceso a tu Cuenta</h2>
+                    <form class="contact-form" id="login-form">
+                        <input type="email" name="Email" placeholder="Tu Correo" required>
+                        <input type="password" name="Password" placeholder="Tu Contraseña" required>
+                        <button type="submit" class="btn btn-solid" style="background: var(--secondary);">Entrar 🐕</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 3: DERECHA (CONTACTO Y CATÁLOGO PDF) -->
+        <div class="panel" id="panel-contact">
+            <div class="cover cover-right">
+                <h2>Contacto Rápido ⚡</h2>
+                <p>Sin registro necesario</p>
+                <span class="click-hint">Clic para abrir ⬆️</span>
+            </div>
+            <div class="content">
+                <button class="btn-close">❌</button>
+                <div class="content-inner">
+                    <h2 style="color: var(--primary); margin-bottom: 20px;">Atención Inmediata</h2>
+                    
+                    <a href="https://wa.me/573212086044?text=Hola,%20me%20gustaría%20agendar%20una%20cita" target="_blank" class="btn btn-solid" style="background-color: #25D366; width: 100%; margin-bottom: 20px;">
+                        💬 Escribir al WhatsApp
+                    </a>
+
+                    <div class="divider">
+                        <span>O revisa nuestros servicios</span>
+                    </div>
+
+                    <!-- Enlace directo a tu PDF en Google Drive -->
+                    <a href="https://drive.google.com/file/d/1uVBwKO8AF_UT-avzX3ryXY7pSct3asa_/view?usp=sharing" target="_blank" class="btn btn-outline" style="width: 100%;">
+                        Ver Catálogo en PDF 📄
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="main.js"></script>
+</body>
+</html>
