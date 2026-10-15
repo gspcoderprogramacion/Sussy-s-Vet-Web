@@ -175,7 +175,7 @@
     };
 
     // ==========================================
-    // 5. GENERAR PDF (Ajustado a 1 sola página exacta)
+    // 5. GENERAR PDF (Blindado contra CORS)
     // ==========================================
     window.generarPDF = function() {
         const elemento = document.getElementById('documento-pdf');
@@ -197,7 +197,7 @@
                 scale: 2, 
                 useCORS: true, 
                 allowTaint: true,
-                removeContainer: true
+                logging: false
             },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
