@@ -175,7 +175,7 @@
     };
 
     // ==========================================
-    // 5. GENERAR PDF (Con seguridad CORS para imágenes locales)
+    // 5. GENERAR PDF (Ajustado a 1 sola página exacta)
     // ==========================================
     window.generarPDF = function() {
         const elemento = document.getElementById('documento-pdf');
@@ -196,7 +196,8 @@
             html2canvas:  { 
                 scale: 2, 
                 useCORS: true, 
-                allowTaint: true // Evita que falle al procesar PNGs locales
+                allowTaint: true,
+                removeContainer: true
             },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
