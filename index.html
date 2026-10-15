@@ -69,9 +69,12 @@
                 <div class="content-inner">
                     <h2 style="color: var(--secondary); margin-bottom: 20px;">Acceso a tu Cuenta</h2>
                     <form class="contact-form" id="login-form">
-                        <input type="email" name="Email" placeholder="Tu Correo" required>
-                        <input type="password" name="Password" placeholder="Tu Contraseña" required>
-                        <button type="submit" class="btn btn-solid" style="background: var(--secondary);">Entrar 🐕</button>
+                        <!-- Quitamos la palabra "required" para que no sea obligatorio llenarlos -->
+                        <input type="email" name="Email" placeholder="Tu Correo">
+                        <input type="password" name="Password" placeholder="Tu Contraseña">
+                        
+                        <!-- Cambiamos el <button> por un enlace <a> que te lleva a formula_medica.html -->
+                        <a href="formula_medica.html" class="btn btn-solid" style="background: var(--secondary); text-align: center;">Entrar 🐕</a>
                     </form>
                 </div>
             </div>

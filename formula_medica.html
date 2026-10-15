@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sussy's Vet | Generador de Fórmula Médica</title>
+    <link rel="icon" type="image/png" href="logo_sussys.png">
+    
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="formula.css">
+
+    <!-- Librerías Externas necesarias -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,900;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Panel de Controles -->
+    <div class="admin-controls">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-blue" onclick="guardarFormula()">💾 Guardar / Actualizar</button>
+            <button class="btn btn-purple" onclick="crearCopia()">📑 Crear Copia</button>
+            <button class="btn btn-red" onclick="generarPDF()">📄 Descargar PDF</button>
+            <button class="btn btn-green" onclick="location.reload()">✨ Limpiar Pantalla</button>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn btn-purple" onclick="abrirHistorial()">📜 Historial</button>
+            <div class="search-box">
+                <label for="load-id" style="display:none;">ID de fórmula</label>
+                <input type="text" id="load-id" placeholder="ID de fórmula...">
+                <button class="btn btn-blue" onclick="cargarFormula()">🔍 Cargar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOCUMENTO A4 -->
+    <div class="document-container" id="documento-pdf">
+        
+        <div>
+            <!-- Encabezado de la Veterinaria con Logotipo al Doble de Tamaño -->
+            <div class="clinic-header">
+                <img src="logo_sussys.png" alt="Sussy's Vet Logo" class="clinic-logo">
+                <div class="clinic-title">
+                    <h2>Sussy's Vet</h2>
+                    <p>Medicina Veterinaria y Cirugía</p>
+                </div>
+            </div>
+
+            <!-- Encabezado de Datos del Paciente -->
+            <div class="header-info">
+                <label>Fecha: <span id="fecha-texto" style="font-weight: normal;"></span></label>
+                
+                <label for="nombre">Nombre: 
+                    <input type="text" class="print-input" id="nombre" placeholder="Nombre de la mascota">
+                </label>
+                
+                <label for="especie">Especie: 
+                    <select class="print-input" id="especie">
+                        <option value="" disabled selected>Seleccione...</option>
+                        <option value="Canino">Canino</option>
+                        <option value="Felino">Felino</option>
+                        <option value="Roedor">Roedor</option>
+                        <option value="Ave">Ave</option>
+                        <option value="Marsupial">Marsupial</option>
+                    </select>
+                </label>
+                
+                <label for="raza">Raza: 
+                    <input type="text" class="print-input" id="raza" placeholder="Ej: PCA / Criollo">
+                </label>
+                
+                <label for="sexo">Sexo: 
+                    <select class="print-input" id="sexo">
+                        <option value="" disabled selected>Seleccione...</option>
+                        <option value="Macho">Macho</option>
+                        <option value="Hembra">Hembra</option>
+                        <option value="Indeterminado">Indeterminado</option>
+                    </select>
+                </label>
+                
+                <label for="edad">Edad: 
+                    <input type="text" class="print-input" id="edad" placeholder="Ej: 3 años">
+                </label>
+            </div>
+
+            <!-- Sección Fórmula -->
+            <div class="banner">Fórmula Médica</div>
+            <label for="medicamentos" style="display:none;">Medicamentos y Dosis</label>
+            <textarea id="medicamentos" class="big-textarea" rows="6" placeholder="1. Escriba aquí el medicamento y la dosis...&#10;2. Siguiente medicamento..."></textarea>
+
+            <!-- Sección Recomendaciones con su etiqueta accesible corregida -->
+            <label for="recomendaciones" style="display: block; margin-top: 10px;"><em>Recomendaciones:</em></label>
+            <textarea id="recomendaciones" class="big-textarea" rows="4" placeholder="• Escriba aquí las recomendaciones generales..."></textarea>
+        </div>
+
+        <!-- Sección Firma Automática en PNG -->
+        <div class="signature-section">
+            <img src="firma.png" alt="Firma Médico Veterinario" class="signature-img" id="firma-imagen">
+            <div class="signature-line">Firma Médico Veterinario</div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE HISTORIAL -->
+    <div class="modal-overlay" id="modal-historial">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📜 Últimas 50 Fórmulas Guardadas</h3>
+                <button class="btn btn-red" style="padding: 5px 10px;" onclick="cerrarHistorial()">✕ Cerrar</button>
+            </div>
+            <div class="modal-body">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre de la Mascota</th>
+                            <th>Especie</th>
+                            <th>Raza</th>
+                            <th>Fecha de Generación</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-historial-body">
+                        <tr><td colspan="5" style="text-align: center;">Cargando historial...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT EXTERNO -->
+    <script src="formula.js"></script>
+</body>
+</html>

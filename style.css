@@ -15,16 +15,27 @@
     font-family: 'Nunito', sans-serif;
 }
 
-body {
+html, body {
+    width: 100%;
+    min-height: 100vh;
     background-color: var(--bg-light);
     color: var(--text-dark);
-    height: 100vh;
-    overflow: hidden; 
 }
 
 /* Huellitas fondo */
-.bg-decorations { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.paw { position: absolute; font-size: 3rem; color: rgba(82, 178, 191, 0.15); animation: floatPaw 6s infinite ease-in-out alternate; }
+.bg-decorations { 
+    position: fixed; 
+    inset: 0; 
+    z-index: -1; 
+    pointer-events: none; 
+    overflow: hidden; 
+}
+.paw { 
+    position: absolute; 
+    font-size: 3rem; 
+    color: rgba(82, 178, 191, 0.15); 
+    animation: floatPaw 6s infinite ease-in-out alternate; 
+}
 @keyframes floatPaw {
     0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 0.2; }
     100% { transform: translateY(-20px) scale(1.1) rotate(15deg); opacity: 0.6; }
@@ -32,11 +43,15 @@ body {
 
 /* Header y Logo */
 header {
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
     padding: 0 5%; 
-    height: 110px; /* Altura aumentada para dar más espacio al logo */
+    height: 100px;
     background-color: var(--white);
-    border-bottom: 4px dashed var(--secondary); z-index: 100; position: relative;
+    border-bottom: 4px dashed var(--secondary); 
+    position: relative;
+    z-index: 100;
 }
 .logo { 
     display: flex;
@@ -44,40 +59,52 @@ header {
     height: 100%;
 }
 .logo img {
-    max-height: 95px; /* Logo más grande para que se aprecie el detalle */
+    max-height: 80px;
     width: auto;
     object-fit: contain;
 }
 .nav-links { list-style: none; }
-.nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; transition: color 0.3s; font-size: 1.1rem; }
+.nav-links a { 
+    text-decoration: none; 
+    color: var(--text-dark); 
+    font-weight: 700; 
+    transition: color 0.3s; 
+    font-size: 1.1rem; 
+}
 .nav-links a:hover { color: var(--secondary); }
 
 /* =======================================
-   SISTEMA DE 3 PANELES FIJOS (33% C/U)
+   SISTEMA DE 3 PANELES (Escritorio)
    ======================================= */
 .panels-container {
     display: flex;
     width: 100%;
-    height: calc(100vh - 110px); /* Ajustado al nuevo tamaño del header */
-    overflow: hidden;
+    height: calc(100vh - 100px);
+    position: relative;
 }
 
-/* Cada columna mantiene siempre su tamaño (flex: 1) */
 .panel {
     flex: 1; 
     position: relative;
     overflow: hidden;
     border-right: 2px solid rgba(255,255,255,0.2);
     background: var(--bg-light);
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .panel:last-child { border-right: none; }
 
-/* LAS PORTADAS (Covers que se enrollan) */
+/* LAS PORTADAS (Covers) */
 .cover {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    color: var(--white); cursor: pointer; text-align: center; padding: 2rem;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    color: var(--white); 
+    cursor: pointer; 
+    text-align: center; 
+    padding: 2rem;
     transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s;
     z-index: 10;
 }
@@ -88,8 +115,12 @@ header {
 .cover h2 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 900; }
 .cover p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px;}
 .click-hint {
-    background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 20px;
-    font-size: 0.85rem; font-weight: bold; animation: pulse 2s infinite;
+    background: rgba(255,255,255,0.2); 
+    padding: 8px 15px; 
+    border-radius: 20px;
+    font-size: 0.85rem; 
+    font-weight: bold; 
+    animation: pulse 2s infinite;
 }
 @keyframes pulse {
     0% { transform: scale(1); }
@@ -97,38 +128,47 @@ header {
     100% { transform: scale(1); }
 }
 
-/* EFECTO: El portón sube al estar activo */
-.panel.active .cover {
-    transform: translateY(-100%);
-    pointer-events: none;
+/* EFECTO: El portón sube al estar activo (SOLO EN PC) */
+@media screen and (min-width: 901px) {
+    .panel.active .cover {
+        transform: translateY(-100%);
+        pointer-events: none;
+    }
 }
 
 /* EL CONTENIDO INTERNO (Formularios) */
 .content {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-    opacity: 0; visibility: hidden;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    opacity: 0; 
+    visibility: hidden;
     transition: opacity 0.4s ease 0.3s;
     z-index: 5;
     padding: 1rem;
 }
 .panel.active .content {
-    opacity: 1; visibility: visible;
+    opacity: 1; 
+    visibility: visible;
 }
 .content-inner {
-    width: 100%; max-width: 320px;
-    background: var(--white); padding: 2rem 1.5rem;
-    border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    width: 100%; 
+    max-width: 320px;
+    background: var(--white); 
+    padding: 2rem 1.5rem;
+    border-radius: 20px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     text-align: center;
     position: relative;
 }
 
-/* Botón cerrar/volver circular (ACTUALIZADO para que no se corte) */
+/* Botón cerrar/volver circular */
 .btn-close {
     position: absolute; 
-    top: 20px;   /* Lo bajamos hacia adentro del panel */
-    right: 20px; /* Lo movemos a la izquierda adentro del panel */
+    top: 20px;   
+    right: 20px; 
     background: var(--white); 
     border: none; 
     padding: 10px 14px; 
@@ -145,15 +185,28 @@ header {
 /* Formularios y Botones Generales */
 .contact-form { display: flex; flex-direction: column; gap: 0.8rem; }
 .contact-form input {
-    background-color: #f1f3f5; padding: 12px; border: 2px solid transparent;
-    border-radius: 12px; font-size: 0.95rem; width: 100%; outline: none; transition: 0.3s;
+    background-color: #f1f3f5; 
+    padding: 12px; 
+    border: 2px solid transparent;
+    border-radius: 12px; 
+    font-size: 0.95rem; 
+    width: 100%; 
+    outline: none; 
+    transition: 0.3s;
 }
 .contact-form input:focus { border-color: var(--primary); background-color: var(--white); }
 
 .btn {
-    padding: 12px 20px; border-radius: 50px; font-weight: 800; font-size: 1rem;
-    cursor: pointer; border: 2px solid transparent; text-decoration: none; display: inline-block;
-    transition: 0.3s; width: 100%;
+    padding: 12px 20px; 
+    border-radius: 50px; 
+    font-weight: 800; 
+    font-size: 1rem;
+    cursor: pointer; 
+    border: 2px solid transparent; 
+    text-decoration: none; 
+    display: inline-block;
+    transition: 0.3s; 
+    width: 100%;
 }
 .btn-solid { background: var(--primary); color: var(--white); box-shadow: 0 4px 10px rgba(82, 178, 191, 0.4); }
 .btn-solid:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(82, 178, 191, 0.6); }
@@ -165,8 +218,43 @@ header {
 }
 .divider span { background: var(--white); padding: 0 10px; color: #aaa; font-weight: 700; font-size: 0.9rem;}
 
-/* Responsivo */
+
+/* =======================================
+   NUEVO EFECTO ACORDEÓN PARA CELULARES
+   ======================================= */
 @media screen and (max-width: 900px) {
-    .panels-container { flex-direction: column; overflow-y: auto; }
-    .panel { min-height: 33.33vh; }
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
+    
+    .panels-container {
+        display: block; /* ESTO ARREGLA LA PANTALLA EN BLANCO. Apaga el modo flexbox. */
+        height: auto;
+    }
+    
+    /* El panel inactivo es pequeño, solo muestra la portada */
+    .panel {
+        display: block; /* Se aseguran de comportarse como bloques normales */
+        width: 100%;
+        height: 150px; 
+        border-right: none;
+        border-bottom: 4px solid var(--white);
+        transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* Crecimiento suave hacia abajo */
+    }
+    
+    /* Al hacer clic, el panel CRECE a 530px empujando a los demás hacia abajo */
+    .panel.active {
+        height: 530px; 
+    }
+    
+    /* La portada se esconde hacia la izquierda en vez de hacia arriba para que no se vea cortada */
+    .panel.active .cover {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    
+    /* Ajustes de tamaño de letra para que quepa bien en el espacio reducido */
+    .cover h2 { font-size: 1.6rem; }
+    .cover p { font-size: 1rem; }
 }
