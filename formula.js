@@ -175,7 +175,7 @@
     };
 
     // ==========================================
-    // 5. GENERAR PDF (Blindado contra CORS)
+    // 5. GENERAR PDF (Solución definitiva de Encaje)
     // ==========================================
     window.generarPDF = function() {
         const elemento = document.getElementById('documento-pdf');
@@ -187,27 +187,81 @@
             return;
         }
 
+        // --- SOLUCIÓN PARA LOS TEXTAREA ---
+        const medTextarea = document.getElementById('medicamentos');
+        const recTextarea = document.getElementById('recomendaciones');
+        
+        let medDiv = null;
+        let recDiv = null;
+
+        if (medTextarea) {
+            medDiv = document.createElement('div');
+            medDiv.innerHTML = medTextarea.value.replace(/\n/g, '<br>');
+            medDiv.className = medTextarea.className; 
+            medDiv.style.minHeight = medTextarea.offsetHeight + 'px';
+            medDiv.style.whiteSpace = 'pre-wrap';
+            medTextarea.parentNode.replaceChild(medDiv, medTextarea);
+        }
+
+        if (recTextarea) {
+            recDiv = document.createElement('div');
+            recDiv.innerHTML = recTextarea.value.replace(/\n/g, '<br>');
+            recDiv.className = recTextarea.className;
+            recDiv.style.minHeight = recTextarea.offsetHeight + 'px';
+            recDiv.style.whiteSpace = 'pre-wrap';
+            recTextarea.parentNode.replaceChild(recDiv, recTextarea);
+        }
+
         elemento.classList.add('pdf-mode');
 
+        // --- SOLUCIÓN AL DESPLAZAMIENTO DERECHO ---
+        // Quitamos el centrado temporalmente para que la captura empiece desde X=0
+        const bodyOriginalJustify = document.body.style.justifyContent;
+        document.body.style.justifyContent = 'flex-start';
+
+        // Quitamos los márgenes extra, el padding interno de 20mm del CSS hará el trabajo perfecto
         const opciones = {
-            margin:       0,
+            margin:       0, 
             filename:     `Formula_${nombreMascota}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { 
                 scale: 2, 
                 useCORS: true, 
                 allowTaint: true,
-                logging: false
+                logging: false,
+                scrollX: 0,
+                scrollY: 0
             },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['css', 'legacy'] }
         };
 
         html2pdf().set(opciones).from(elemento).save().then(() => {
+            // Restaurar el documento
             elemento.classList.remove('pdf-mode');
+            document.body.style.justifyContent = bodyOriginalJustify; // Vuelve a centrar
+            
+            // --- RESTAURAR LOS TEXTAREA ---
+            if (medDiv && medTextarea) {
+                medDiv.parentNode.replaceChild(medTextarea, medDiv);
+            }
+            if (recDiv && recTextarea) {
+                recDiv.parentNode.replaceChild(recTextarea, recDiv);
+            }
         }).catch(err => {
             console.error(err);
             alert("Hubo un error al generar el PDF.");
+            // Restaurar el documento en caso de error
             elemento.classList.remove('pdf-mode');
+            document.body.style.justifyContent = bodyOriginalJustify;
+            
+            // --- RESTAURAR LOS TEXTAREA ---
+            if (medDiv && medTextarea) {
+                medDiv.parentNode.replaceChild(medTextarea, medDiv);
+            }
+            if (recDiv && recTextarea) {
+                recDiv.parentNode.replaceChild(recTextarea, recDiv);
+            }
         });
     };
 })();

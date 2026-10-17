@@ -1,95 +1,299 @@
-:root {
-    --primary: #52B2BF;
-    --primary-dark: #1F618D;
-    --text: #000000;
-    --bg: #f4f7f6;
-}
-body { font-family: 'Nunito', sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; display: flex; flex-direction: column; align-items: center; }
-
-/* Controles de la Aplicación (No se imprimen) */
-.admin-controls { width: 100%; max-width: 900px; background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center;}
-.btn { padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; transition: 0.3s; }
-.btn-blue { background: var(--primary); }
-.btn-blue:hover { background: #3c9aa7; }
-.btn-green { background: #2ecc71; }
-.btn-green:hover { background: #27ae60; }
-.btn-purple { background: #9b59b6; }
-.btn-purple:hover { background: #8e44ad; }
-.btn-red { background: #e74c3c; }
-.btn-red:hover { background: #c0392b; }
-
-.search-box { display: flex; gap: 5px; align-items: center; background: #f1f3f5; padding: 5px 10px; border-radius: 8px;}
-.search-box input { padding: 8px; border: 1px solid #ccc; border-radius: 5px; width: 180px;}
-
-/* Documento Tipo Hoja Carta (A4 ajustado milimétricamente para evitar hoja 2) */
-.document-container {
-    background: white; 
-    width: 210mm; 
-    height: 292mm; /* Ligeramente menor a 297mm para evitar desbordes */
-    padding: 12mm 20mm; 
-    box-shadow: 0 0 10px rgba(0,0,0,0.1); 
-    position: relative;
+/* ==========================================
+   ESTILOS GENERALES Y LAYOUT
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    overflow: hidden;
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* ==========================================
+   CONTROLES DE ADMINISTRADOR (Botones superiores)
+   ========================================== */
+.admin-controls {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    padding: 15px 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+.btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-blue { background-color: #007bff; color: white; }
+.btn-blue:hover { background-color: #0056b3; }
+
+.btn-purple { background-color: #6f42c1; color: white; }
+.btn-purple:hover { background-color: #5a32a3; }
+
+.btn-red { background-color: #dc3545; color: white; }
+.btn-red:hover { background-color: #a71d2a; }
+
+.btn-green { background-color: #28a745; color: white; }
+.btn-green:hover { background-color: #1e7e34; }
+
+.search-box {
+    display: flex;
+    gap: 10px;
+}
+
+.search-box input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 200px;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* ==========================================
+   CONTENEDOR DEL DOCUMENTO (A4)
+   ========================================== */
+.document-container {
+    background: #ffffff;
+    width: 210mm; 
+    min-height: 297mm; /* Alto estándar A4 para verse bien en pantalla */
+    margin-top: 80px; 
+    padding: 10mm 20mm 20mm 20mm; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     display: flex;
     flex-direction: column;
+    justify-content: flex-start; 
+    position: relative;
+}
+
+/* --- SOLUCIÓN A LA HOJA EN BLANCO --- */
+/* Cuando JS activa el modo PDF, quitamos la altura fija y sombras para que no desborde ni 1mm */
+.document-container.pdf-mode {
+    min-height: auto !important;
+    box-shadow: none !important;
+    margin-top: 0 !important;
+}
+
+/* ==========================================
+   ENCABEZADO DE LA CLÍNICA
+   ========================================== */
+.clinic-header {
+    display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #52B2BF;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
 }
 
-/* Encabezado con Logotipo Proporcional (Sin estirarse) */
-.clinic-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 10px; }
-.clinic-logo { width: auto; height: 90px; max-width: 140px; object-fit: contain; }
-.clinic-title { text-align: right; }
-.clinic-title h2 { margin: 0; font-size: 1.5rem; color: var(--primary-dark); }
-.clinic-title p { margin: 2px 0 0 0; font-size: 0.85rem; color: #555; }
+.clinic-logo {
+    max-height: 80px;
+    object-fit: contain;
+}
 
-/* Inputs transparentes */
-.print-input { border: none; border-bottom: 1px dashed #bbb; outline: none; font-family: inherit; font-size: 0.9rem; padding: 2px 5px; width: auto; min-width: 150px; background: transparent; }
-.print-input.full-width { width: 100%; }
-select.print-input { cursor: pointer; }
+.clinic-title {
+    text-align: right;
+}
 
-.header-info { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; font-weight: bold; font-size: 0.95rem; }
-.header-info label { display: flex; align-items: center; gap: 10px; }
+.clinic-title h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    font-weight: 900;
+}
 
-/* Banner Fórmula */
-.banner { background-color: var(--primary-dark); color: white; text-align: center; padding: 5px; font-style: italic; font-weight: bold; margin: 8px 0; border: 1px solid black; }
+.clinic-title p {
+    color: #666;
+    font-size: 1rem;
+    font-weight: 700;
+}
 
-/* Textareas manuales grandes con soporte estricto de saltos de línea */
-.big-textarea {
-    width: 100%;
+/* ==========================================
+   DATOS DEL PACIENTE (Inputs)
+   ========================================== */
+.header-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px 30px;
+    margin-bottom: 30px;
+}
+
+.header-info label {
+    font-weight: 700;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.print-input {
+    flex: 1;
     border: none;
-    border-bottom: 1px dashed #bbb;
-    resize: none; 
-    font-family: inherit;
-    font-size: 0.9rem;
-    outline: none;
-    overflow: hidden;
-    line-height: 1.3;
-    padding: 4px;
+    border-bottom: 1px dashed #ccc;
+    padding: 5px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
     background: transparent;
-    white-space: pre-wrap; /* Clave para conservar los enters/saltos de línea */
+    outline: none;
+    color: #333;
 }
 
-/* Firma Automática en PNG */
-.signature-section { margin-top: 5px; display: flex; flex-direction: column; align-items: flex-start; }
-.signature-img { width: 150px; height: 55px; object-fit: contain; margin-bottom: 2px; }
-.signature-line { width: 240px; border-top: 1px solid black; margin-top: 2px; padding-top: 2px; font-weight: bold; text-align: center; font-size: 0.85rem;}
+.print-input:focus {
+    border-bottom-color: #52B2BF;
+}
 
-/* Modal Historial */
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
-.modal-content { background: white; width: 90%; max-width: 800px; max-height: 80vh; border-radius: 10px; padding: 25px; display: flex; flex-direction: column; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
-.modal-body { overflow-y: auto; flex-grow: 1; }
-table.history-table { width: 100%; border-collapse: collapse; text-align: left; }
-table.history-table th, table.history-table td { padding: 10px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-table.history-table th { background: #f8f9fa; color: var(--primary-dark); }
-table.history-table tr:hover { background: #f1f3f5; }
-
-/* Ocultar solo los controles administrativos al generar PDF */
-.pdf-mode .admin-controls { display: none !important; }
-.pdf-mode select.print-input {
+/* Ocultar la flechita de los selects al imprimir/generar PDF */
+.pdf-mode select {
+    appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    appearance: none;
     background: transparent;
 }
+
+/* ==========================================
+   ÁREA MÉDICA (Fórmula y Recomendaciones)
+   ========================================== */
+.banner {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.big-textarea {
+    width: 100%;
+    border: 1px solid transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    background: transparent;
+    overflow: hidden;
+    color: #333;
+    padding: 5px 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.big-textarea:focus {
+    background-color: #f8f9fa;
+    border-color: #eee;
+}
+
+/* ==========================================
+   SECCIÓN DE FIRMA (Anclada al texto)
+   ========================================== */
+.signature-section {
+    margin-top: 50px; 
+    align-self: center; 
+    text-align: center;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    display: inline-block;
+    width: auto; 
+}
+
+.signature-img {
+    max-height: 100px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
+.signature-line {
+    border-top: 1px solid #333;
+    width: 250px;
+    margin: 0 auto;
+    padding-top: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #2c3e50;
+}
+
+/* ==========================================
+   MODAL (Historial)
+   ========================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-header h3 { color: #2c3e50; }
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th, .history-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.history-table th {
+    background-color: #2c3e50;
+    color: white;
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+}
+
+.history-table tr:hover { background-color: #f8f9fa; }
