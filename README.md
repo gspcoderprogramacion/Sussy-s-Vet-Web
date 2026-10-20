@@ -120,4 +120,4 @@ La tabla de fórmulas existente recibe la columna `created_by`. Fórmulas antigu
 
 ## Servicios externos
 
-Supabase JS se carga desde jsDelivr; `html2pdf.js` desde cdnjs y Nunito desde Google Fonts. La recuperación e invitación dependen de la entrega de correo configurada en Supabase. Contacto y catálogo se enlazan a WhatsApp y Google Drive.
+Supabase JS se carga desde jsDelivr; `html2canvas` y `jsPDF` desde cdnjs y Nunito desde Google Fonts. La descarga del PDF compone el documento en una sola página A4; la opción Imprimir abre la impresión del navegador con estilos A4. La recuperación e invitación dependen de la entrega de correo configurada en Supabase. Contacto y catálogo se enlazan a WhatsApp y Google Drive.

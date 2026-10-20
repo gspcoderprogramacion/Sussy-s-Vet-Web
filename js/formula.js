@@ -179,94 +179,92 @@
     };
 
     // ==========================================
-    // 5. GENERAR PDF (Solución definitiva de Encaje)
+    // 5. Preparar el documento para exportar o imprimir
     // ==========================================
-    window.generarPDF = function() {
+    function prepareDocumentOutput() {
         const elemento = document.getElementById('documento-pdf');
-        const nombreInput = document.getElementById('nombre');
-        const nombreMascota = nombreInput && nombreInput.value ? nombreInput.value.trim() : 'Paciente';
-        
-        if (!elemento) {
-            alert("No se encontró el contenedor del documento.");
-            return;
-        }
+        if (!elemento) throw new Error('No se encontró el documento de la fórmula.');
+        const replacements = [];
 
-        // --- SOLUCIÓN PARA LOS TEXTAREA ---
-        const medTextarea = document.getElementById('medicamentos');
-        const recTextarea = document.getElementById('recomendaciones');
-        
-        let medDiv = null;
-        let recDiv = null;
-
-        if (medTextarea) {
-            medDiv = document.createElement('div');
-            medDiv.innerHTML = medTextarea.value.replace(/\n/g, '<br>');
-            medDiv.className = medTextarea.className; 
-            medDiv.style.minHeight = medTextarea.offsetHeight + 'px';
-            medDiv.style.whiteSpace = 'pre-wrap';
-            medTextarea.parentNode.replaceChild(medDiv, medTextarea);
-        }
-
-        if (recTextarea) {
-            recDiv = document.createElement('div');
-            recDiv.innerHTML = recTextarea.value.replace(/\n/g, '<br>');
-            recDiv.className = recTextarea.className;
-            recDiv.style.minHeight = recTextarea.offsetHeight + 'px';
-            recDiv.style.whiteSpace = 'pre-wrap';
-            recTextarea.parentNode.replaceChild(recDiv, recTextarea);
-        }
+        ['medicamentos', 'recomendaciones'].forEach(id => {
+            const textarea = document.getElementById(id);
+            if (!textarea) return;
+            const textBlock = document.createElement('div');
+            textBlock.className = textarea.className;
+            textBlock.textContent = textarea.value;
+            textBlock.style.height = 'auto';
+            textBlock.style.minHeight = '0';
+            textBlock.style.whiteSpace = 'pre-wrap';
+            textBlock.style.overflowWrap = 'anywhere';
+            textarea.parentNode.replaceChild(textBlock, textarea);
+            replacements.push({ textarea, textBlock });
+        });
 
         elemento.classList.add('pdf-mode');
+        return () => {
+            elemento.classList.remove('pdf-mode');
+            replacements.forEach(({ textarea, textBlock }) => {
+                if (textBlock.parentNode) textBlock.parentNode.replaceChild(textarea, textBlock);
+            });
+        };
+    };
 
-        // --- SOLUCIÓN AL DESPLAZAMIENTO DERECHO ---
-        // Quitamos el centrado temporalmente para que la captura empiece desde X=0
-        const bodyOriginalJustify = document.body.style.justifyContent;
-        document.body.style.justifyContent = 'flex-start';
+    window.generarPDF = async function() {
+        const elemento = document.getElementById('documento-pdf');
+        const nombreInput = document.getElementById('nombre');
+        const nombreMascota = (nombreInput?.value || 'Paciente').trim().replace(/[\\/:*?"<>|]/g, '_');
+        let restore = null;
+        try {
+            restore = prepareDocumentOutput();
+            await document.fonts.ready;
+            await Promise.all(Array.from(elemento.querySelectorAll('img')).map(img => img.decode().catch(() => {})));
 
-        // Quitamos los márgenes extra, el padding interno de 20mm del CSS hará el trabajo perfecto
-        const opciones = {
-            margin:       0, 
-            filename:     `Formula_${nombreMascota}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true, 
-                allowTaint: true,
+            const canvas = await html2canvas(elemento, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: '#ffffff',
                 logging: false,
                 scrollX: 0,
-                scrollY: 0
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['css', 'legacy'] }
-        };
+                scrollY: 0,
+                width: elemento.scrollWidth,
+                height: elemento.scrollHeight,
+                windowWidth: Math.max(document.documentElement.clientWidth, elemento.scrollWidth),
+                windowHeight: Math.max(window.innerHeight, elemento.scrollHeight)
+            });
 
-        html2pdf().set(opciones).from(elemento).save().then(() => {
-            // Restaurar el documento
-            elemento.classList.remove('pdf-mode');
-            document.body.style.justifyContent = bodyOriginalJustify; // Vuelve a centrar
-            
-            // --- RESTAURAR LOS TEXTAREA ---
-            if (medDiv && medTextarea) {
-                medDiv.parentNode.replaceChild(medTextarea, medDiv);
-            }
-            if (recDiv && recTextarea) {
-                recDiv.parentNode.replaceChild(recTextarea, recDiv);
-            }
-        }).catch(err => {
-            console.error(err);
-            alert("Hubo un error al generar el PDF.");
-            // Restaurar el documento en caso de error
-            elemento.classList.remove('pdf-mode');
-            document.body.style.justifyContent = bodyOriginalJustify;
-            
-            // --- RESTAURAR LOS TEXTAREA ---
-            if (medDiv && medTextarea) {
-                medDiv.parentNode.replaceChild(medTextarea, medDiv);
-            }
-            if (recDiv && recTextarea) {
-                recDiv.parentNode.replaceChild(recTextarea, recDiv);
-            }
-        });
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait', compress: true });
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const margin = 8;
+            const fit = Math.min((pageWidth - margin * 2) / canvas.width, (pageHeight - margin * 2) / canvas.height);
+            const imageWidth = canvas.width * fit;
+            const imageHeight = canvas.height * fit;
+            const image = canvas.toDataURL('image/jpeg', 0.96);
+            pdf.addImage(image, 'JPEG', (pageWidth - imageWidth) / 2, (pageHeight - imageHeight) / 2, imageWidth, imageHeight, undefined, 'FAST');
+            pdf.save(`Formula_${nombreMascota || 'Paciente'}.pdf`);
+        } catch (error) {
+            console.error(error);
+            alert('No se pudo generar el PDF. Revisa tu conexión e inténtalo de nuevo.');
+        } finally {
+            if (restore) restore();
+        }
+    };
+
+    window.imprimirFormula = function() {
+        let restore = null;
+        const elemento = document.getElementById('documento-pdf');
+        try {
+            restore = prepareDocumentOutput();
+            const pageHeightPx = 297 * 96 / 25.4;
+            const scale = Math.min(1, pageHeightPx / elemento.scrollHeight);
+            elemento.style.setProperty('--print-scale', scale.toFixed(4));
+            window.print();
+        } finally {
+            if (restore) restore();
+            elemento?.style.removeProperty('--print-scale');
+        }
     };
 })();
 

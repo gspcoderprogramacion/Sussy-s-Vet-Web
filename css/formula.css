@@ -297,3 +297,107 @@ body {
 }
 
 .history-table tr:hover { background-color: #f8f9fa; }
+/* Responsive editor: keep the A4 sheet readable on phones without shrinking the controls. */
+html { background: #f0f2f5; }
+.admin-controls > div { min-width: 0; }
+.document-actions .btn,
+.document-tools .btn { width: auto; }
+.document-container { max-width: calc(100vw - 40px); }
+.header-info { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.header-info label { min-width: 0; }
+.print-input { min-width: 0; width: 100%; }
+
+@media screen and (max-width: 760px) {
+    body { display: block; padding: 10px; overflow-x: hidden; }
+    .admin-controls {
+        position: sticky;
+        top: 0;
+        left: auto;
+        width: 100%;
+        padding: 10px;
+        margin: -10px -10px 12px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+        border-radius: 0 0 12px 12px;
+    }
+    .document-actions,
+    .document-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+    .document-actions .btn { flex: 1 1 145px; min-height: 44px; justify-content: center; padding: 9px 10px; font-size: .9rem; }
+    .document-tools > .btn { flex: 1 1 120px; justify-content: center; min-height: 44px; }
+    .search-box { flex: 2 1 220px; min-width: 0; }
+    .search-box input { width: 100%; min-width: 0; }
+    .search-box .btn { flex: 0 0 auto; min-height: 44px; }
+    .document-container {
+        width: 100%;
+        max-width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto 16px;
+        padding: 8mm 7mm 10mm;
+        border-radius: 8px;
+        box-shadow: 0 4px 18px rgba(0,0,0,.12);
+    }
+    .clinic-header { gap: 12px; padding-bottom: 14px; margin-bottom: 16px; align-items: center; }
+    .clinic-logo { max-width: 38%; max-height: 64px; }
+    .clinic-title { min-width: 0; }
+    .clinic-title h2 { font-size: clamp(1.05rem, 5vw, 1.4rem); line-height: 1.15; }
+    .clinic-title p { font-size: .78rem; line-height: 1.25; }
+    .header-info { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-bottom: 20px; }
+    .header-info label { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px; font-size: .92rem; }
+    .print-input { font-size: 16px; padding: 7px 2px; }
+    .banner { margin: 14px 0 10px; font-size: 1.05rem; }
+    .big-textarea { font-size: 16px; line-height: 1.5; }
+    .signature-section { margin-top: 28px; max-width: 100%; }
+    .signature-img { max-width: min(220px, 70vw); max-height: 86px; }
+    .signature-line { width: min(250px, 70vw); }
+    .modal-overlay { padding: 10px; }
+    .modal-content { width: 100%; max-height: 88dvh; }
+    .modal-header { gap: 10px; padding: 12px; }
+    .modal-header h3 { font-size: 1rem; }
+    .modal-body { padding: 10px; }
+    .history-table { min-width: 620px; }
+}
+
+@media screen and (max-width: 380px) {
+    body { padding: 7px; }
+    .admin-controls { margin: -7px -7px 10px; padding: 8px; }
+    .document-actions .btn { flex-basis: 130px; font-size: .82rem; }
+    .document-container { padding: 7mm 5mm 9mm; }
+    .header-info label { grid-template-columns: 66px minmax(0, 1fr); font-size: .86rem; }
+}
+
+/* A printed/exported prescription always uses an A4 canvas, independently of viewport size. */
+.document-container.pdf-mode {
+    width: 210mm !important;
+    max-width: none !important;
+    min-height: 297mm !important;
+    border-radius: 0 !important;
+    padding: 10mm 15mm 14mm !important;
+    margin: 0 !important;
+}
+
+@media print {
+    @page { size: A4 portrait; margin: 0; }
+    html, body { width: 210mm !important; height: 297mm !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: hidden !important; background: #fff !important; }
+    body { display: block !important; }
+    .admin-controls, .modal-overlay { display: none !important; }
+    .document-container {
+        position: absolute !important;
+        top: 0 !important;
+        left: 50% !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        min-height: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 10mm 15mm 14mm !important;
+        overflow: hidden !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        transform: translateX(-50%) scale(var(--print-scale, 1));
+        transform-origin: top center;
+    }
+    .print-input { color: #222 !important; }
+    .print-input::placeholder, .big-textarea::placeholder { color: transparent !important; }
+    .banner { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

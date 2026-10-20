@@ -11,20 +11,22 @@
 
     <!-- Librerías Externas necesarias -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,900;1,700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <!-- Panel de Controles -->
     <div class="admin-controls">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="document-actions">
             <button class="btn btn-blue" onclick="guardarFormula()">💾 Guardar / Actualizar</button>
             <button class="btn btn-purple" onclick="crearCopia()">📑 Crear Copia</button>
             <button class="btn btn-red" onclick="generarPDF()">📄 Descargar PDF</button>
+            <button class="btn btn-green" onclick="imprimirFormula()">🖨️ Imprimir</button>
             <button class="btn btn-green" onclick="location.reload()">✨ Limpiar Pantalla</button>
         </div>
-        <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="document-tools">
             <button class="btn btn-purple" onclick="abrirHistorial()">📜 Historial</button>
             <div class="search-box">
                 <label for="load-id" style="display:none;">ID de fórmula</label>
