@@ -1,4 +1,4 @@
-(function() {
+(async function() {
     // ==========================================
     // 0. AUTO-COMPLETAR FECHA ACTUAL
     // ==========================================
@@ -17,9 +17,12 @@
     // ==========================================
     // 1. CONFIGURACIÓN DE SUPABASE
     // ==========================================
-    const SUPABASE_URL = 'https://kpasfvlaashsiovzxxbk.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_skZ7tGL7cTyqKox3A1g9YA_hd8MWRIO';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = window.supabaseClient;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.replace('../index.html'); return; }
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
+    if (profile?.role !== 'veterinarian' && profile?.role !== 'admin') { window.location.replace('../index.html'); return; }
+    const currentUserId = session.user.id;
 
     let idFormulaActual = null;
 
@@ -44,6 +47,7 @@
     window.guardarFormula = async function() {
         const dataToSave = {
             fecha: document.getElementById('fecha-texto') ? document.getElementById('fecha-texto').innerText : '',
+            created_by: currentUserId,
             nombre_paciente: document.getElementById('nombre') ? document.getElementById('nombre').value : '',
             especie: document.getElementById('especie') ? document.getElementById('especie').value : '',
             raza: document.getElementById('raza') ? document.getElementById('raza').value : '',
@@ -265,3 +269,4 @@
         });
     };
 })();
+

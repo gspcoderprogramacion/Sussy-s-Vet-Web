@@ -1,73 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const supabase = window.supabaseClient;
+  const form = document.getElementById('login-form');
+  const message = document.getElementById('auth-message');
+  const say = (text, error = false) => { message.textContent = text; message.classList.toggle('error', error); };
+  const destination = { admin: 'views/admin.html', veterinarian: 'views/veterinarian.html', owner: 'views/owner.html' };
 
-    // ==========================================
-    // 1. ANIMACIÓN DE LOS 3 PANELES (Portón hacia arriba)
-    // ==========================================
-    const panels = document.querySelectorAll('.panel');
-    const btnCloses = document.querySelectorAll('.btn-close');
-    const btnHome = document.querySelector('.btn-home');
-
-    // Función para abrir un panel
-    panels.forEach(panel => {
-        const cover = panel.querySelector('.cover');
-        
-        cover.addEventListener('click', () => {
-            // Cierra todos los portones primero
-            resetPanels();
-            // Abre solo el portón de la columna a la que le dimos clic
-            panel.classList.add('active');
-        });
-    });
-
-    // Función que simplemente quita la clase 'active' de todos
-    function resetPanels() {
-        panels.forEach(p => {
-            p.classList.remove('active');
-        });
+  async function routeUser(user) {
+    const { data, error } = await supabase.from('profiles').select('role, full_name').eq('id', user.id).single();
+    if (error || !data || !destination[data.role]) {
+      await supabase.auth.signOut();
+      say('Tu cuenta no tiene un rol habilitado. Contacta al administrador.', true);
+      return;
     }
+    location.replace(destination[data.role]);
+  }
 
-    // Botones de "X" (Cierra el portón activo)
-    btnCloses.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evita volver a hacer clic en la portada sin querer
-            resetPanels();
-        });
-    });
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) await routeUser(session.user);
 
-    // Enlace de Inicio en la barra de navegación (Cierra todos)
-    if(btnHome) {
-        btnHome.addEventListener('click', (e) => {
-            e.preventDefault();
-            resetPanels();
-        });
-    }
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const button = form.querySelector('button[type="submit"]'); button.disabled = true;
+    say('Validando acceso…');
+    const { data, error } = await supabase.auth.signInWithPassword({ email: form.email.value.trim(), password: form.password.value });
+    button.disabled = false;
+    if (error) return say(error.message, true);
+    await routeUser(data.user);
+  });
 
-    // ==========================================
-    // 2. CONEXIÓN A SUPABASE (Lista para uso futuro)
-    // ==========================================
-    const SUPABASE_URL = 'https://kpasfvlaashsiovzxxbk.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_skZ7tGL7cTyqKox3A1g9YA_hd8MWRIO';
-    
-    // Inicializamos el cliente. Lo usarás luego para login y registro.
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // ==========================================
-    // 3. PREVENCIÓN FORMULARIOS LOGIN/REGISTRO
-    // ==========================================
-    const registerForm = document.getElementById('register-form');
-    const loginForm = document.getElementById('login-form');
-
-    if(registerForm) {
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('🛠️ La función de crear cuenta está en construcción.');
-        });
-    }
-
-    if(loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('🛠️ La función de iniciar sesión está en construcción.');
-        });
-    }
+  document.getElementById('forgot-password').addEventListener('click', async () => {
+    const email = form.email.value.trim();
+    if (!email) return say('Escribe tu correo para enviarte el enlace de recuperación.', true);
+    // Resolve relative to the deployed project path (including GitHub Pages /<repo>/).
+    const recoveryUrl = new URL('views/reset-password.html', document.baseURI).toString();
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: recoveryUrl });
+    say(error ? error.message : 'Si el correo está registrado, recibirás instrucciones para recuperar tu contraseña.', Boolean(error));
+  });
 });
