@@ -22,6 +22,8 @@
     if (!session) { window.location.replace('../index.html'); return; }
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', session.user.id).single();
     if (profile?.role !== 'veterinarian' && profile?.role !== 'admin') { window.location.replace('../index.html'); return; }
+    const menuPrincipal = document.getElementById('menu-principal');
+    if (menuPrincipal && profile.role === 'admin') menuPrincipal.href = 'admin.html';
     const currentUserId = session.user.id;
 
     let idFormulaActual = null;
