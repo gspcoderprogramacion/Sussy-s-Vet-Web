@@ -44,7 +44,7 @@
     // ==========================================
     // 3. GUARDAR, ACTUALIZAR Y CARGAR (SUPABASE)
     // ==========================================
-    window.guardarFormula = async function() {
+    async function persistirFormula() {
         const dataToSave = {
             fecha: document.getElementById('fecha-texto') ? document.getElementById('fecha-texto').innerText : '',
             created_by: currentUserId,
@@ -65,14 +65,21 @@
         }
 
         const { data, error } = result;
+        if (error) throw error;
 
-        if (error) {
+        if (!data?.[0]?.id) throw new Error('No se pudo confirmar el registro guardado.');
+        idFormulaActual = data[0].id;
+        const loadInput = document.getElementById('load-id');
+        if(loadInput) loadInput.value = idFormulaActual;
+        return idFormulaActual;
+    }
+
+    window.guardarFormula = async function() {
+        try {
+            const id = await persistirFormula();
+            alert("✅ Fórmula guardada correctamente.\n\nID: " + id);
+        } catch (error) {
             alert("Error al guardar: " + error.message);
-        } else {
-            idFormulaActual = data[0].id;
-            const loadInput = document.getElementById('load-id');
-            if(loadInput) loadInput.value = idFormulaActual;
-            alert("✅ Fórmula guardada correctamente.\n\nID: " + idFormulaActual);
         }
     };
 
@@ -215,6 +222,7 @@
         const nombreMascota = (nombreInput?.value || 'Paciente').trim().replace(/[\\/:*?"<>|]/g, '_');
         let restore = null;
         try {
+            await persistirFormula();
             restore = prepareDocumentOutput();
             await document.fonts.ready;
             await Promise.all(Array.from(elemento.querySelectorAll('img')).map(img => img.decode().catch(() => {})));
@@ -246,7 +254,7 @@
             pdf.save(`Formula_${nombreMascota || 'Paciente'}.pdf`);
         } catch (error) {
             console.error(error);
-            alert('No se pudo generar el PDF. Revisa tu conexión e inténtalo de nuevo.');
+            alert('No se pudo guardar la fórmula o generar el PDF: ' + error.message);
         } finally {
             if (restore) restore();
         }
